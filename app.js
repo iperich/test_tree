@@ -96,11 +96,22 @@ mainApp.controller("mainController", function($scope,$sce) {
      */
    $scope.del_node=function(node_string){
       
-      var indexes=split(node_string,".");
+      var indexes=node_string.split(".");
       
-      //console.log(eval('$scope.tree.nodes'+parent_node));
-      console.log($scope.tree.nodes[1].children);
-      //eval('$scope.tree.nodes'+parent_node+'.splice('+i+',1)');
+      var parent_string="$scope.tree.nodes";
+      
+      for (i = 0; i < indexes.length-1; i++) { 
+         index=indexes[i];
+         parent_string=parent_string+'['+index+'].children';
+      }
+      
+      var parent=eval(parent_string);
+      console.log(indexes.length-1);
+      
+      parent.splice(indexes[indexes.length-1],1);
+      
+      
+      
       $scope.treeDisplay($scope.tree.nodes,0)
     }
     
