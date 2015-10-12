@@ -62,6 +62,9 @@ mainApp.controller("mainController", function($scope,$sce) {
                          value:'hola 2.1',
                          children:[{name:'nodo 2.1.1',
                                     value:'hola 2.1.1',
+                                    children:[]},
+                                    {name:'nodo 2.1.2',
+                                    value:'hola 2.1.2',
                                     children:[]}
                                   ]}
                         ]},
@@ -86,12 +89,38 @@ mainApp.controller("mainController", function($scope,$sce) {
      *          
      */
         
-   $scope.add_node=function(parent_node,node_name) {
-      parent_node.push({name:$scope.node_name,value:'test'});
-      $scope.node_name="";
-      $scope.show_add_root=false;
-      $scope.show_edit=false;
-      $scope.treeDisplay($scope.tree.nodes,0)
+   $scope.add_node=function(node_string) {
+      var indexes=node_string.split("_");
+      
+      var parent_string="$scope.tree.nodes";
+      
+      for (i = 0; i < indexes.length; i++) { 
+         index=indexes[i];
+         parent_string=parent_string+'['+index+'].children';
+      }
+      
+      var parent=eval(parent_string);
+      
+      parent.push({name:eval('$scope.add_'+node_string),
+                  value:'hola 1',
+               children:[]
+                  });
+      eval('$scope.show_add_'+node_string+'=false');
+      
+      
+      
+      $scope.treeDisplay($scope.tree.nodes,0);
+      
+      //abrir nodos
+      node_to_open="$scope.children_";
+      for (i = 0; i < indexes.length; i++) { 
+         index=indexes[i];
+         node_to_open=node_to_open+index+'_';
+         eval(node_to_open+'=true');
+      }
+      
+      console.log(node_string+'-s'+parent_string);
+      
    };
     
     /*
@@ -150,7 +179,7 @@ mainApp.controller("mainController", function($scope,$sce) {
     
     
     
-    
+
     
     
     
@@ -176,11 +205,28 @@ mainApp.controller("mainController", function($scope,$sce) {
                $scope.children_=true;
             }
             $scope.tree_view = $scope.tree_view + '<div style="padding-left:30px;" ng-show="children_'+parent+'">';
+            
+            // mostrar [+] y [-]
+            
             if (current.children && current.children.length > 0) {
-                $scope.tree_view = $scope.tree_view + '<span ng-show="children_'+parent+i+'_" ng-click="children_'+parent+i+'_=false">[-]</span>';
-                $scope.tree_view = $scope.tree_view + '<span ng-show="!children_'+parent+i+'_" ng-click="children_'+parent+i+'_=true">[+]</span>';
+               $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="children_'+parent+i+'_" ng-click="children_'+parent+i+'_=false">[-]</a>';
+               $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!children_'+parent+i+'_" ng-click="children_'+parent+i+'_=true">[+]</a>';
             };
-            $scope.tree_view = $scope.tree_view + ('<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'"><input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span><a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a> <br>');
+            
+            // mostrar el nombre del nodo
+            
+            $scope.tree_view = $scope.tree_view + '<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'">';
+                                
+            //mostrar lo necesario para editar el nombre (input y button)                    
+                                                
+            $scope.tree_view = $scope.tree_view + '<input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span>';
+            
+            //mostrar controles
+            
+            $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node("'+parent+i+'");" ng-confirm-click="Sure?">[Delete]</a><a href="#" ng-show="!show_add_'+parent+i+'" ng-click="show_add_'+parent+i+'=true");">[Add children]</a> <br>';
+            
+            $scope.tree_view = $scope.tree_view + '<span ng-show="show_add_'+parent+i+'"><input type="text" ng-model="add_'+parent+i+'" name="add_'+parent+i+'" ng-keyup="$event.keyCode == 13 && add_node(\''+parent+i+'\')"><input type="button" ng-click="add_node(\''+parent+i+'\')" value="Add"> </span>';
+            
             parentid = current.id == null ? '0' : current.id;
             eval('$scope.edit_'+parent+i+'="'+current.name+'"');
             current.index = i;
