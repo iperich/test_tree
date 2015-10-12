@@ -94,9 +94,11 @@ mainApp.controller("mainController", function($scope,$sce) {
       
       var parent_string="$scope.tree.nodes";
       
-      for (i = 0; i < indexes.length; i++) { 
-         index=indexes[i];
-         parent_string=parent_string+'['+index+'].children';
+      if (node_string!='') {
+         for (i = 0; i < indexes.length; i++) { 
+            index=indexes[i];
+            parent_string=parent_string+'['+index+'].children';
+         }
       }
       
       var parent=eval(parent_string);
@@ -223,7 +225,7 @@ mainApp.controller("mainController", function($scope,$sce) {
             
             //mostrar controles
             
-            $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node("'+parent+i+'");" ng-confirm-click="Sure?">[Delete]</a><a href="#" ng-show="!show_add_'+parent+i+'" ng-click="show_add_'+parent+i+'=true");">[Add children]</a> <br>';
+            $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a><a href="#" ng-show="!show_add_'+parent+i+'" ng-click="show_add_'+parent+i+'=true");">[Add children]</a> <br>';
             
             $scope.tree_view = $scope.tree_view + '<span ng-show="show_add_'+parent+i+'"><input type="text" ng-model="add_'+parent+i+'" name="add_'+parent+i+'" ng-keyup="$event.keyCode == 13 && add_node(\''+parent+i+'\')"><input type="button" ng-click="add_node(\''+parent+i+'\')" value="Add"> </span>';
             

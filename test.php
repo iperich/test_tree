@@ -12,7 +12,7 @@
     <div ng-app="mainApp" ng-controller="mainController">
     <br><br>
     <a ng-show="!show_add_root" href="#" ng-click="show_add_root=true">New Root Node</a>
-    <span ng-show="show_add_root">Name: <input name="add_" ng-model="node_name" ng-keyup="$event.keyCode == 13 && add_node(tree.nodes);"><input type="button" ng-click="add_node(tree.nodes);" value="Add"/></span>
+    <span ng-show="show_add_root">Name: <input name="add_" ng-model="add_" ng-keyup="$event.keyCode == 13 && add_node('');"><input type="button" ng-click="add_node('');" value="Add"/></span>
     
     <div dynamic="tree_view"></div>
     
