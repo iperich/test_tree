@@ -22,23 +22,28 @@ mainApp.directive('dynamic', function ($compile) {
  *
  */
 
-mainApp.directive('ngConfirmClick', [
-  function(){
-    return {
-      priority: -1,
-      restrict: 'A',
-      link: function(scope, element, attrs){
-        element.bind('click', function(e){
-          var message = attrs.ngConfirmClick;
-          if(message && !confirm(message)){
-            e.stopImmediatePropagation();
-            e.preventDefault();
+mainApp.directive('ngConfirmClick', function ($window) {
+  var i = 0;
+  return {
+    restrict: 'A',
+    priority:  1,
+    compile: function (tElem, tAttrs) {
+      var fn = '$$confirmClick' + i++,
+          _ngClick = tAttrs.ngClick;
+      tAttrs.ngClick = fn + '($event)';
+
+      return function (scope, elem, attrs) {
+        var confirmMsg = attrs.confirmClick || 'Are you sure?';
+
+        scope[fn] = function (event) {
+          if($window.confirm(confirmMsg)) {
+            scope.$eval(_ngClick, {$event: event});
           }
-        });
-      }
+        };
+      };
     }
-  }
-]);
+  };
+});
 
 
 
@@ -172,7 +177,7 @@ mainApp.controller("mainController", function($scope,$sce) {
                 depth_view=depth_view+"--";
             }
             
-            $scope.tree_view = $scope.tree_view + (depth_view+'<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'"><input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" value="'+current.name+'"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span><a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a> <br>');
+            $scope.tree_view = $scope.tree_view + (depth_view+'<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'"><input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span><a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a> <br>');
             parentid = current.id == null ? '0' : current.id;
             eval('$scope.edit_'+parent+i+'="'+current.name+'"');
             current.index = i;
