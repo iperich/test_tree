@@ -36,7 +36,7 @@ mainApp.directive('ngConfirmClick', function ($window) {
         var confirmMsg = attrs.confirmClick || 'Are you sure?';
 
         scope[fn] = function (event) {
-          if($window.confirm(confirmMsg)) {
+          if($window.confirm(confirmMsg)) {   //               <----- confirm 
             scope.$eval(_ngClick, {$event: event});
           }
         };
@@ -96,9 +96,8 @@ mainApp.controller("mainController", function($scope,$sce) {
     
     /*
      *function del_node:  delete nodes
-     *inputs:   parent_node: parent node
-     *          name: name of node to delete
-     *          
+     *inputs:  nodestring_ node to delete in form "nodeIndex_subnodeIndex_sub-subnodeIndex etc"
+     *          ej: del_node('2_1_0')
      */
    $scope.del_node=function(node_string){
       
@@ -121,8 +120,8 @@ mainApp.controller("mainController", function($scope,$sce) {
       $scope.treeDisplay($scope.tree.nodes,0)
     }
     
-       /*
-     *function edit_node:  delete nodes
+    /*
+     *function edit_node:  change node name
      *inputs:   parent_node: parent node
      *          name: name of node to delete
      *          
@@ -173,17 +172,22 @@ mainApp.controller("mainController", function($scope,$sce) {
             
             var current = input[i];
             var depth_view="";
-            for(var j = 0; j < depth; j++){
-                depth_view=depth_view+"--";
+            if (parent!="") {
+               $scope.children_=true;
             }
-            
-            $scope.tree_view = $scope.tree_view + (depth_view+'<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'"><input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span><a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a> <br>');
+            $scope.tree_view = $scope.tree_view + '<div style="padding-left:30px;" ng-show="children_'+parent+'">';
+            if (current.children && current.children.length > 0) {
+                $scope.tree_view = $scope.tree_view + '<span ng-show="children_'+parent+i+'_" ng-click="children_'+parent+i+'_=false">[-]</span>';
+                $scope.tree_view = $scope.tree_view + '<span ng-show="!children_'+parent+i+'_" ng-click="children_'+parent+i+'_=true">[+]</span>';
+            };
+            $scope.tree_view = $scope.tree_view + ('<span ng-show="!show_edit_'+parent+i+'">'+current.name+'</span><span ng-show="show_edit_'+parent+i+'"><input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span><a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a> <br>');
             parentid = current.id == null ? '0' : current.id;
             eval('$scope.edit_'+parent+i+'="'+current.name+'"');
             current.index = i;
             if (current.children && current.children.length > 0) {
                 $scope.treeDisplay(current.children,depth+1,parent+i+'_');
             };
+            $scope.tree_view = $scope.tree_view + "</div>";
         };
       console.log($scope.tree_view);
       $sce.trustAsHtml($scope.tree_view);
