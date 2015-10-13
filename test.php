@@ -11,8 +11,8 @@
     <body>
     <div ng-app="mainApp" ng-controller="mainController">
     <br><br>
-    <a ng-show="!show_add_root" href="#" ng-click="show_add_root=true;focus_root=true">New Root Node</a>
-    <span ng-show="show_add_root" >Name: <input focus-me="focus_root" ng-blur="show_add_root=false" name="add_" ng-model="add_" ng-keyup="$event.keyCode == 13 && add_node('');"><input type="button" ng-click="add_node('');" value="Add"/></span>
+    <a ng-show="!show_add_" href="#" ng-click="show_add_=true;focus_=true">New Root Node</a>
+    <span ng-show="show_add_" >Name: <input focus-me="focus_" ng-blur="show_add_=false" name="add_" ng-model="add_" ng-keyup="($event.keyCode == 13) && (add_node(''));"><input type="button" ng-click="add_node('');" value="Add"/></span>
     
     <div dynamic="tree_view"></div>
     

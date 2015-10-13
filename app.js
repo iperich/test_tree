@@ -1,6 +1,9 @@
 var mainApp = angular.module("mainApp", ['ngSanitize']);
 
-
+/*
+ * Directiva focus-me, para poner foco en algún input 
+ *
+ */
 
 mainApp.directive('focusMe', function($timeout) {
   return {
@@ -112,8 +115,8 @@ mainApp.controller("mainController", function($scope,$sce) {
      */
         
    $scope.add_node=function(node_string) {
-      var indexes=node_string.split("_");
       
+      var indexes=node_string.split("_");
       var parent_string="$scope.tree.nodes";
       
       if (node_string!='') {
@@ -124,13 +127,16 @@ mainApp.controller("mainController", function($scope,$sce) {
       }
       
       var parent=eval(parent_string);
-      
-      parent.push({name:eval('$scope.add_'+node_string),
-                  value:'hola 1',
-               children:[]
-                  });
+      var new_name=eval('$scope.add_'+node_string);
+      if (new_name!=''&&new_name!=undefined) {
+         parent.push({name:new_name,
+                     value:'hola 1',
+                  children:[]
+                     });
+      }
+      console.log(new_name);
       eval('$scope.show_add_'+node_string+'=false');
-      
+      eval('$scope.add_'+node_string+'=""');
       
       
       $scope.treeDisplay($scope.tree.nodes,0);
