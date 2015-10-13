@@ -1,7 +1,29 @@
 var mainApp = angular.module("mainApp", ['ngSanitize']);
 
-//define directiva "dynamic" que permite html sin filtrar dentro. 
 
+
+mainApp.directive('focusMe', function($timeout) {
+  return {
+    scope: { trigger: '=focusMe' },
+    link: function(scope, element) {
+      scope.$watch('trigger', function(value) {
+        if(value === true) { 
+          //console.log('trigger',value);
+          //$timeout(function() {
+            element[0].focus();
+            scope.trigger = false;
+          //});
+        }
+      });
+    }
+  };
+});
+
+
+/*
+ * Define directiva "dynamic" que permite html sin filtrar dentro.
+ *
+ */
 
 mainApp.directive('dynamic', function ($compile) {
   return {
@@ -121,7 +143,7 @@ mainApp.controller("mainController", function($scope,$sce) {
          eval(node_to_open+'=true');
       }
       
-      console.log(node_string+'-s'+parent_string);
+      //console.log(node_string+'-s'+parent_string);
       
    };
     
@@ -171,10 +193,10 @@ mainApp.controller("mainController", function($scope,$sce) {
       var node=eval(node_array_string);
       
       var new_name=eval('$scope.edit_'+node_string);
-      console.log('$scope.edit_'+node_string);
+      //console.log('$scope.edit_'+node_string);
       node[indexes[indexes.length-1]].name=new_name;
       eval('$scope.show_edit_'+node_string+'=false');
-      console.log()
+      //console.log()
       
       $scope.treeDisplay($scope.tree.nodes,0)
     }
@@ -221,13 +243,13 @@ mainApp.controller("mainController", function($scope,$sce) {
                                 
             //mostrar lo necesario para editar el nombre (input y button)                    
                                                 
-            $scope.tree_view = $scope.tree_view + '<input type="text" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span>';
+            $scope.tree_view = $scope.tree_view + '<input ng-blur="show_edit_'+parent+i+'=false" type="text" focus-me="focus_edit_'+parent+i+'" ng-model="edit_'+parent+i+'" name="edit_'+parent+i+'" ng-keyup="$event.keyCode == 13 && edit_node(\''+parent+i+'\')"><input type="button" ng-click="edit_node(\''+parent+i+'\')" value="Save"> </span>';
             
             //mostrar controles
             
-            $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a><a href="#" ng-show="!show_add_'+parent+i+'" ng-click="show_add_'+parent+i+'=true");">[Add children]</a> <br>';
+            $scope.tree_view = $scope.tree_view + '<a href="#" ng-show="!show_edit_'+parent+i+'" ng-click="show_edit_'+parent+i+'=true;focus_edit_'+parent+i+'=true">[Edit]</a><a href="#" ng-click="del_node(\''+parent+i+'\');" ng-confirm-click="Sure?">[Delete]</a><a href="#" ng-show="!show_add_'+parent+i+'" ng-click="show_add_'+parent+i+'=true;focus_add_'+parent+i+'=true");">[Add children]</a> <br>';
             
-            $scope.tree_view = $scope.tree_view + '<span ng-show="show_add_'+parent+i+'"><input type="text" ng-model="add_'+parent+i+'" name="add_'+parent+i+'" ng-keyup="$event.keyCode == 13 && add_node(\''+parent+i+'\')"><input type="button" ng-click="add_node(\''+parent+i+'\')" value="Add"> </span>';
+            $scope.tree_view = $scope.tree_view + '<span style="padding-left:30px;" ng-show="show_add_'+parent+i+'"><input type="text" ng-blur="show_add_'+parent+i+'=false"  focus-me="focus_add_'+parent+i+'" ng-model="add_'+parent+i+'" name="add_'+parent+i+'" ng-keyup="$event.keyCode == 13 && add_node(\''+parent+i+'\')"><input type="button" ng-click="add_node(\''+parent+i+'\')" value="Add"> </span>';
             
             parentid = current.id == null ? '0' : current.id;
             eval('$scope.edit_'+parent+i+'="'+current.name+'"');
@@ -237,7 +259,7 @@ mainApp.controller("mainController", function($scope,$sce) {
             };
             $scope.tree_view = $scope.tree_view + "</div>";
         };
-      console.log($scope.tree_view);
+      //console.log($scope.tree_view);
       $sce.trustAsHtml($scope.tree_view);
     };
     
